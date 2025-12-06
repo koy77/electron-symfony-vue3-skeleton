@@ -1,0 +1,28 @@
+# Ignore dependencies
+backend/vendor/
+frontend/node_modules/
+electron/node_modules/
+
+# Ignore build artifacts
+frontend/dist/
+electron/dist/
+
+# Ignore environment files
+.env.local
+.env.*.local
+
+# Ignore logs
+*.log
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore Symfony cache
+backend/var/

@@ -1,0 +1,23 @@
+{
+    "name": "electron-vue-symfony-desktop",
+    "version": "1.0.0",
+    "description": "Electron desktop app for Vue 3 + Symfony stack",
+    "main": "main.js",
+    "scripts": {
+        "start": "electron .",
+        "dev": "electron . --dev"
+    },
+    "keywords": [
+        "electron",
+        "vue",
+        "symfony"
+    ],
+    "author": "",
+    "license": "MIT",
+    "dependencies": {
+        "electron": "^28.0.0"
+    },
+    "devDependencies": {
+        "electron-builder": "^24.9.0"
+    }
+}
