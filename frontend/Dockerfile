@@ -10,12 +10,11 @@ COPY package.json ./
 COPY package-lock.json* ./
 
 # Layer 4: Install npm dependencies with cache optimization
-RUN npm ci --only=production --silent && \
-    npm cache clean --force
+RUN npm install 
+RUN npm cache clean --force
 
 # Layer 5: Copy application source code
 COPY src/ ./src/
-COPY public/ ./public/
 COPY index.html ./
 COPY tsconfig.json ./
 COPY tsconfig.node.json ./
