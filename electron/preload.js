@@ -6,12 +6,31 @@ contextBridge.exposeInMainWorld('electronAPI', {
     // App info
     getAppVersion: () => ipcRenderer.invoke('get-app-version'),
     getPlatform: () => ipcRenderer.invoke('get-platform'),
+    getAppInfo: () => ipcRenderer.invoke('get-app-info'),
 
-    // File system (example)
+    // Window management
+    minimizeWindow: () => ipcRenderer.invoke('minimize-window'),
+    maximizeWindow: () => ipcRenderer.invoke('maximize-window'),
+    closeWindow: () => ipcRenderer.invoke('close-window'),
+
+    // File system
     readFile: (filePath) => ipcRenderer.invoke('read-file', filePath),
+    writeFile: (filePath, content) => ipcRenderer.invoke('write-file', filePath, content),
 
-    // You can add more IPC methods here as needed
+    // System information
+    getSystemInfo: () => ipcRenderer.invoke('get-system-info'),
+
+    // Events
+    onWindowEvent: (callback) => {
+        ipcRenderer.on('window-event', (event, data) => callback(data))
+    },
+    removeAllListeners: (channel) => {
+        ipcRenderer.removeAllListeners(channel)
+    }
 })
 
 // Expose a flag to detect if running in Electron
 contextBridge.exposeInMainWorld('isElectron', true)
+
+// Log that preload script has loaded
+console.log('Electron preload script loaded successfully')

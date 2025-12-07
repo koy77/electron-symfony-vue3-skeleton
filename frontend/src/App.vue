@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
+import ElectronControls from '@/components/ElectronControls.vue'
 </script>
 
 <template>
   <div id="app">
+    <!-- Electron Controls (only shown in Electron) -->
+    <ElectronControls v-if="typeof window !== 'undefined' && (window as any).isElectron" />
+    
     <header>
       <nav>
         <RouterLink to="/">Home</RouterLink>

@@ -42,7 +42,7 @@ services:
       APP_ENV: dev
       APP_SECRET: ${APP_SECRET:-changeme_generate_a_real_secret_key}
 
-  # Vue 3 Frontend
+# Vue 3 Frontend
   frontend:
     build:
       context: ./frontend
@@ -58,9 +58,9 @@ services:
     depends_on:
       - backend
     environment:
-      VITE_API_URL: http://localhost:8000
+       VITE_API_URL: http://backend:8000
 
-  # Electron Desktop App (optional - requires X11)
+  # Electron Desktop App - Main Application Window
   electron:
     build:
       context: ./electron
@@ -75,9 +75,14 @@ services:
     depends_on:
       - frontend
     environment:
-      DISPLAY: ${DISPLAY}
-    profiles:
-      - desktop
+      DISPLAY: :99
+      ELECTRON_IS_DEV: 1
+    stdin_open: true
+    tty: true
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - seccomp:unconfined
 
 networks:
   app-network:

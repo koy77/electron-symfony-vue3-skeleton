@@ -1,9 +1,22 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useApiStore } from '@/stores/api'
 
 const apiStore = useApiStore()
 const message = ref('Welcome to Electron + Vue 3 + Symfony!')
+
+// Check if running in Electron
+const isElectron = computed(() => {
+  return typeof window !== 'undefined' && (window as any).isElectron
+})
+
+// Update message based on environment
+const displayMessage = computed(() => {
+  if (isElectron.value) {
+    return '🖥️ Electron Desktop App + Vue 3 + Symfony!'
+  }
+  return '🌐 Web App + Vue 3 + Symfony!'
+})
 
 onMounted(async () => {
   await apiStore.fetchStatus()
@@ -12,7 +25,11 @@ onMounted(async () => {
 
 <template>
   <div class="home">
-    <h1>{{ message }}</h1>
+    <h1>{{ displayMessage }}</h1>
+    
+    <div class="environment-badge" v-if="isElectron">
+      <span class="badge electron">🖥️ Running in Electron</span>
+    </div>
     
     <div class="cards-grid">
       <div class="card">
@@ -30,9 +47,24 @@ onMounted(async () => {
         <p>Powerful PHP backend with API Platform</p>
       </div>
       
-      <div class="card">
+      <div class="card" :class="{ 'electron-card': isElectron }">
         <h2>🖥️ Electron</h2>
-        <p>Cross-platform desktop application wrapper</p>
+        <p v-if="isElectron">Cross-platform desktop application with native window controls</p>
+        <p v-else>Desktop application mode available</p>
+      </div>
+    </div>
+
+    <!-- Electron-specific features -->
+    <div class="electron-features" v-if="isElectron">
+      <div class="card">
+        <h2>🔧 Desktop Features</h2>
+        <div class="feature-list">
+          <div class="feature-item">✅ Native window controls</div>
+          <div class="feature-item">✅ File system access</div>
+          <div class="feature-item">✅ System information</div>
+          <div class="feature-item">✅ Application menu</div>
+          <div class="feature-item">✅ Cross-platform support</div>
+        </div>
       </div>
     </div>
 
@@ -106,6 +138,50 @@ h1 {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.environment-badge {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.badge.electron {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3);
+}
+
+.electron-card {
+  border: 2px solid #667eea;
+  box-shadow: 0 4px 6px rgba(102, 126, 234, 0.2);
+}
+
+.electron-features {
+  margin-bottom: 3rem;
+}
+
+.feature-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.feature-item {
+  background: rgba(102, 126, 234, 0.1);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: #667eea;
+  font-weight: 500;
 }
 
 @keyframes fadeInUp {

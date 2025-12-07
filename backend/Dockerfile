@@ -1,49 +1,92 @@
 FROM php:8.3-fpm
 
-# Install system dependencies
-RUN apt-get update
-RUN apt-get install -y git
-RUN apt-get install -y curl
-RUN apt-get install -y libpq-dev
-RUN apt-get install -y libzip-dev
-RUN apt-get install -y libicu-dev
-RUN apt-get install -y zip
-RUN apt-get install -y unzip
-RUN apt-get install -y nginx
-RUN apt-get install -y supervisor
-RUN docker-php-ext-configure intl
-RUN docker-php-ext-install pdo
-RUN docker-php-ext-install pdo_pgsql
-RUN docker-php-ext-install zip
-RUN docker-php-ext-install intl
-RUN docker-php-ext-install opcache
-RUN rm -rf /var/lib/apt/lists/*
+# Layer 1: Base system packages
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    ca-certificates \
+    gnupg \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install Composer
+# Layer 2: Development tools
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Layer 3: Archive utilities
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    zip \
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+# Layer 4: Database libraries
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Layer 5: Compression libraries
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    libzip-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Layer 6: Internationalization libraries
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    libicu-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Layer 7: Web server and process manager
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    nginx \
+    supervisor \
+    && rm -rf /var/lib/apt/lists/*
+
+# Layer 8: PHP extensions - Database
+RUN docker-php-ext-configure pdo_pgsql && \
+    docker-php-ext-install pdo_pgsql
+
+# Layer 9: PHP extensions - Basic PDO
+RUN docker-php-ext-install pdo
+
+# Layer 10: PHP extensions - Compression
+RUN docker-php-ext-install zip
+
+# Layer 11: PHP extensions - Internationalization
+RUN docker-php-ext-configure intl && \
+    docker-php-ext-install intl
+
+# Layer 12: PHP extensions - Performance
+RUN docker-php-ext-install opcache
+
+# Layer 13: Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Set working directory
+# Layer 14: Set working directory
 WORKDIR /var/www/html
 
-# Copy bootstrap script
+# Layer 15: Copy bootstrap script
 COPY docker-bootstrap.sh /usr/local/bin/bootstrap.sh
 RUN chmod +x /usr/local/bin/bootstrap.sh
 
-# Copy nginx config
+# Layer 16: Copy nginx config
 COPY nginx.conf /etc/nginx/sites-available/default
 
-# Copy supervisor config
+# Layer 17: Copy supervisor config
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Create necessary directories
-RUN mkdir -p /var/www/html
-RUN mkdir -p /run/php
+# Layer 18: Create directories
+RUN mkdir -p /var/www/html /run/php
 
-# Set permissions
+# Layer 19: Set permissions
 RUN chown -R www-data:www-data /var/www/html
 
-# Expose port 8000
+# Layer 20: Expose port
 EXPOSE 8000
 
-# Run bootstrap script and start services
+# Layer 21: Run application
 CMD ["/usr/local/bin/bootstrap.sh"]

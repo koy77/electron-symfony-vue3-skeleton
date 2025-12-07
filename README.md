@@ -1,6 +1,6 @@
 # Electron + Vue 3 + Symfony Dockerized Application
 
-A full-stack dockerized application combining Electron desktop capabilities with Vue 3 frontend and Symfony backend.
+A full-stack dockerized desktop application built with Electron, featuring a Vue 3 frontend and Symfony backend. The application runs as a native-looking desktop window via Electron, with all components orchestrated through Docker.
 
 ## 🚀 Tech Stack
 
@@ -61,32 +61,43 @@ APP_SECRET=changeme_generate_a_real_secret_key
 
 ### 3. Start the Application
 
-**Start backend and frontend only:**
+**Quick Start (Recommended):**
 
 ```bash
-docker-compose up -d
+./start-app.sh
 ```
 
-This will start:
-- PostgreSQL database on `localhost:5432`
-- Symfony backend on `http://localhost:8000`
-- Vue frontend on `http://localhost:5173`
+This script will:
+- Configure X11 access for the Electron GUI
+- Start all services (PostgreSQL, Symfony, Vue, Electron)
+- Open the Electron desktop window automatically
 
-**Start with Electron (requires X11):**
+**Manual Start:**
 
 ```bash
-# On Linux, allow X11 connections
+# Allow X11 connections
 xhost +local:docker
 
-# Start all services including Electron
-docker-compose --profile desktop up
+# Start all services
+docker compose up
+```
+
+**Start backend and frontend only (without Electron):**
+
+```bash
+# Stop Electron if running
+docker compose stop electron
+
+# Access via browser
+docker compose up postgres backend frontend
 ```
 
 ### 4. Access the Application
 
-- **Web Frontend**: http://localhost:5173
+- **Primary Interface**: Electron desktop window (opens automatically)
+- **Alternative - Web Browser**: http://localhost:5173
 - **API Documentation**: http://localhost:8000/api
-- **Electron**: Opens automatically when using `--profile desktop`
+- **Database**: localhost:5432
 
 ## 🔧 Development
 

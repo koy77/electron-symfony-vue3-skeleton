@@ -5,12 +5,15 @@
     "main": "main.js",
     "scripts": {
         "start": "electron .",
-        "dev": "electron . --dev"
+        "dev": "electron . --dev",
+        "build": "electron-builder",
+        "docker-start": "/app/start-electron.sh"
     },
     "keywords": [
         "electron",
         "vue",
-        "symfony"
+        "symfony",
+        "docker"
     ],
     "author": "",
     "license": "MIT",

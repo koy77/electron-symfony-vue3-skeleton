@@ -1,18 +1,35 @@
 FROM node:20-alpine
 
+# Layer 1: Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Layer 2: Copy package.json first for better caching
+COPY package.json ./
 
-# Install dependencies
-RUN npm install
+# Layer 3: Copy package-lock.json if exists
+COPY package-lock.json* ./
 
-# Copy application code
-COPY . .
+# Layer 4: Install npm dependencies with cache optimization
+RUN npm ci --only=production --silent && \
+    npm cache clean --force
 
-# Expose port
+# Layer 5: Copy application source code
+COPY src/ ./src/
+COPY public/ ./public/
+COPY index.html ./
+COPY tsconfig.json ./
+COPY tsconfig.node.json ./
+COPY vite.config.ts ./
+
+# Layer 6: Copy .env files if they exist
+COPY .env* ./
+
+# Layer 7: Expose port
 EXPOSE 5173
 
-# Start development server
+# Layer 8: Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:5173/ || exit 1
+
+# Layer 9: Start development server
 CMD ["npm", "run", "dev"]

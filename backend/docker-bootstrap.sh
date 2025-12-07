@@ -19,6 +19,10 @@ if [ ! -f "composer.json" ]; then
     composer require nelmio/cors-bundle
     composer require api-platform/core
     
+    echo "Configuring API Platform..."
+    # Enable API Platform in bundles.php
+    sed -i "s/\/\/ ApiPlatform\\Bundle\\ApiPlatformBundle\\ApiPlatformBundle::class => \['all' => true\],/ApiPlatform\\Bundle\\ApiPlatformBundle\\ApiPlatformBundle::class => ['all' => true],/" config/bundles.php
+    
     echo "Installing dev dependencies..."
     composer require --dev symfony/maker-bundle
     
@@ -26,6 +30,8 @@ if [ ! -f "composer.json" ]; then
     cat > .env.local <<EOF
 DATABASE_URL="postgresql://app:!ChangeMe!@postgres:5432/app?serverVersion=16&charset=utf8"
 CORS_ALLOW_ORIGIN='^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
+API_PLATFORM_ENABLE_SWAGGER_UI=true
+API_PLATFORM_ENABLE_REDOC=true
 EOF
     
     echo "Symfony project created successfully!"
