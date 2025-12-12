@@ -11,20 +11,14 @@ if [ ! -f "composer.json" ]; then
     rm -rf tmp_project
     
     echo "Installing additional packages..."
-    composer require webapp
-    composer require api
-    composer require orm
-    composer require symfony/serializer
-    composer require symfony/validator
-    composer require nelmio/cors-bundle
-    composer require api-platform/core
-    
-    echo "Configuring API Platform..."
-    # Enable API Platform in bundles.php
-    sed -i "s/\/\/ ApiPlatform\\Bundle\\ApiPlatformBundle\\ApiPlatformBundle::class => \['all' => true\],/ApiPlatform\\Bundle\\ApiPlatformBundle\\ApiPlatformBundle::class => ['all' => true],/" config/bundles.php
+    composer require symfony/webapp-pack --no-audit
+    composer require symfony/orm-pack --no-audit
+    composer require symfony/serializer --no-audit
+    composer require symfony/validator --no-audit
+    composer require nelmio/cors-bundle --no-audit
     
     echo "Installing dev dependencies..."
-    composer require --dev symfony/maker-bundle
+    composer require --dev symfony/maker-bundle --no-audit
     
     # Create .env.local with database configuration
     cat > .env.local <<EOF

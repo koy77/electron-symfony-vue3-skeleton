@@ -26,19 +26,11 @@ check_frontend() {
     return 1
 }
 
-# Start virtual display for GUI applications
-echo "🖼️  Starting virtual display..."
-Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
-XVFB_PID=$!
-
-# Wait for X server to start
-sleep 2
+# Use host X server instead of virtual display
+echo "🖼️  Using host X server..."
 
 # Set up audio (disable to avoid issues)
 export AUDIODEV=none
-
-# Set display for GUI applications
-export DISPLAY=:99
 
 # Check if frontend is ready
 if ! check_frontend; then
@@ -66,7 +58,6 @@ fi
 # Cleanup on exit
 cleanup() {
     echo "🧹 Cleaning up..."
-    kill $XVFB_PID 2>/dev/null || true
     exit 0
 }
 

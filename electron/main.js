@@ -24,7 +24,7 @@ function createWindow() {
             preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: false,
             contextIsolation: true,
-            webSecurity: false, // Allow loading local resources in Docker
+            webSecurity: false,
             enableRemoteModule: false,
             sandbox: false
         },
@@ -54,6 +54,21 @@ function createWindow() {
     // Handle window closed
     mainWindow.on('closed', () => {
         mainWindow = null
+    })
+
+    // Handle window minimize/close events
+    mainWindow.on('minimize', () => {
+        console.log('Window minimized')
+    })
+
+    mainWindow.on('blur', () => {
+        console.log('Window lost focus')
+        // Keep window visible when losing focus
+        mainWindow.setAlwaysOnTop(false)
+    })
+
+    mainWindow.on('focus', () => {
+        console.log('Window gained focus')
     })
 
     // Handle navigation

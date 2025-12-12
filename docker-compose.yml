@@ -28,7 +28,7 @@ services:
       dockerfile: Dockerfile
     container_name: app-backend
     ports:
-      - "8000:8000"
+      - "8001:8000"
     volumes:
       - ./backend:/var/www/html
       - backend_vendor:/var/www/html/vendor
@@ -75,12 +75,14 @@ services:
     depends_on:
       - frontend
     environment:
-      DISPLAY: :99
+      DISPLAY: :0
       ELECTRON_IS_DEV: 1
     stdin_open: true
     tty: true
     cap_add:
       - SYS_ADMIN
+    devices:
+      - /dev/dri:/dev/dri
     security_opt:
       - seccomp:unconfined
 

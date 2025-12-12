@@ -1,57 +1,86 @@
 FROM node:20
 
-# Install all system packages in a single layer
-RUN apt-get update && \
+# Layer 1: Base apt setup
+RUN set -eux; \
+    apt-get update; \
     apt-get install -y --no-install-recommends \
-    ca-certificates \
-    gnupg \
-    curl \
-    libgtk-3-0 \
-    libgdk-pixbuf2.0-0 \
-    libpangocairo-1.0-0 \
-    libatk1.0-0 \
-    libcairo-gobject2 \
-    libnss3 \
-    libxss1 \
-    libxtst6 \
-    libxrandr2 \
-    libxshmfence1 \
-    libdrm2 \
-    libgbm1 \
-    libatspi2.0-0 \
-    libnotify4 \
-    libasound2 \
-    xdg-utils \
-    xvfb \
-    libgconf-2-4 \
-    && rm -rf /var/lib/apt/lists/*
+        ca-certificates \
+        gnupg \
+        curl
 
-# Layer 2: Set working directory
+# Layer 2: GTK stack
+RUN set -eux; \
+    apt-get install -y --no-install-recommends \
+        libgtk-3-0 \
+        libgdk-pixbuf2.0-0 \
+        libpangocairo-1.0-0 \
+        libatk1.0-0 \
+        libcairo-gobject2
+
+# Layer 3: Security and X11 helpers
+RUN set -eux; \
+    apt-get install -y --no-install-recommends \
+        libnss3 \
+        libxss1 \
+        libxtst6 \
+        libxrandr2 \
+        libxshmfence1
+
+# Layer 4: DRM and GPU
+RUN set -eux; \
+    apt-get install -y --no-install-recommends \
+        libdrm2 \
+        libgbm1
+
+# Layer 5: Accessibility + notifications
+RUN set -eux; \
+    apt-get install -y --no-install-recommends \
+        libatspi2.0-0 \
+        libnotify4
+
+# Layer 6: Audio
+RUN set -eux; \
+    apt-get install -y --no-install-recommends \
+        libasound2
+
+# Layer 7: Utilities
+RUN set -eux; \
+    apt-get install -y --no-install-recommends \
+        xdg-utils \
+        xvfb
+
+# Layer 8: Legacy support + cleanup
+RUN set -eux; \
+    apt-get install -y --no-install-recommends \
+        libgconf-2-4; \
+    rm -rf /var/lib/apt/lists/*
+
+# Layer 9: Set working directory
 WORKDIR /app
 
-# Layer 3: Copy package.json first for better caching
+# Layer 10: Copy package.json first for better caching
 COPY package.json ./
 
-# Layer 4: Copy package-lock.json if exists
+# Layer 11: Copy package-lock.json if exists
 COPY package-lock.json* ./
 
-# Layer 5: Install npm dependencies with cache optimization
-RUN npm ci --only=production --silent && \
+# Layer 12: Install npm dependencies with cache optimization
+RUN npm install --silent && \
     npm cache clean --force
 
-# Layer 6: Copy application source code
+# Layer 13: Copy application source code
 COPY main.js ./
 COPY preload.js ./
 
-# Layer 7: Create assets directory
+# Layer 14: Create assets directory
 RUN mkdir -p assets
 
-# Layer 8: Create a simple icon (placeholder)
+# Layer 15: Create a simple icon (placeholder)
 RUN echo "Creating placeholder icon..." && \
     echo "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==" | \
     base64 -d > assets/icon.png
 
-# Layer 9: Set display for X11
+# Layer 16: Set display for X11
 ENV DISPLAY=:99
 
 # Layer 10: Create startup script
