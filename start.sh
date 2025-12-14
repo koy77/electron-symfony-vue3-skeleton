@@ -62,6 +62,11 @@ if [ "${1:-}" = "tauri" ]; then
   # Ensure we do not have multiple Tauri dev sessions fighting over Cargo locks
   stop_existing_tauri
 
+  # Make sure the Docker frontend container is not occupying port 5173,
+  # so the local Vite dev server can bind to it for Tauri development.
+  echo "🧹 Ensuring Docker frontend container is stopped for Tauri dev..."
+  docker compose stop frontend >/dev/null 2>&1 || true
+
   # Frontend dev server is started here so Tauri can use devPath=http://localhost:5173
   if ! command -v npx >/dev/null 2>&1; then
     echo "❌ npx is required to run Tauri. Please install Node.js/npm and try again."

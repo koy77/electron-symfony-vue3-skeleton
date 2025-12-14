@@ -61,18 +61,33 @@ APP_SECRET=changeme_generate_a_real_secret_key
 
 ### 3. Start the Application
 
-**Quick Start (Recommended):**
+#### a) Using `start.sh` (Docker backend + desktop app)
+
+**Tauri desktop app (recommended for development):**
 
 ```bash
-./start-app.sh
+./start.sh tauri
 ```
 
 This script will:
-- Configure X11 access for the Electron GUI
+- Build or update Docker images
+- Start PostgreSQL and the Symfony backend in Docker
+- Wait for the backend at `http://localhost:8001/api`
+- Start the Vite dev server at `http://localhost:5173`
+- Launch the Tauri desktop window on your host system
+
+**Legacy Electron-in-Docker mode (original Electron setup):**
+
+```bash
+./start.sh
+```
+
+This script will:
+- Configure X11 access for the Electron GUI (see Troubleshooting section)
 - Start all services (PostgreSQL, Symfony, Vue, Electron)
 - Open the Electron desktop window automatically
 
-**Manual Start:**
+#### b) Manual Start
 
 ```bash
 # Allow X11 connections
@@ -94,9 +109,9 @@ docker compose up postgres backend frontend
 
 ### 4. Access the Application
 
-- **Primary Interface**: Electron desktop window (opens automatically)
+- **Primary Interface**: Electron or Tauri desktop window (opens automatically, depending on how you start the app)
 - **Alternative - Web Browser**: http://localhost:5173
-- **API Documentation**: http://localhost:8000/api
+- **API Documentation**: http://localhost:8001/api
 - **Database**: localhost:5432
 
 ## 🔧 Development

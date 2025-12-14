@@ -2,7 +2,14 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import axios from 'axios'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8001'
+// Resolve API base URL with sensible defaults for host (localhost:8001) and Docker (env override)
+let API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8001'
+
+// Normalize some common misconfigurations
+if (API_URL === 'http://localhost:8000') {
+    // When backend is exposed on host port 8001, using 8000 will fail with a network error
+    API_URL = 'http://localhost:8001'
+}
 
 export const useApiStore = defineStore('api', () => {
     const loading = ref(false)
