@@ -1,9 +1,7 @@
 # Ignore dependencies
 backend/vendor/
 frontend/node_modules/
-# Ignore dependencies
-backend/vendor/
-frontend/node_modules/
+src-tauri/frontend/node_modules/
 
 # Ignore build artifacts
 frontend/dist/

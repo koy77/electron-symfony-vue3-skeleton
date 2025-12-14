@@ -13,6 +13,21 @@
       "active": false,
       "identifier": "com.example.coding_ui"
     },
+    "windows": [
+      {
+        "label": "main",
+        "title": "Tauri Vue Symfony App",
+        "width": 1024,
+        "height": 768,
+        "resizable": true,
+        "fullscreen": false,
+        "decorations": true,
+        "visible": true,
+        "center": true,
+        "focus": true,
+        "url": "/"
+      }
+    ],
     "allowlist": {},
     "security": {
       "csp": null
