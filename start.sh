@@ -7,9 +7,6 @@ set -euo pipefail
 # - Waits for services to be ready
 # - Starts electron container (connects to host X11)
 
-echo "🚀 Building Docker images (pulling latest base images)..."
-docker compose build --pull
-
 # Allow Docker containers to connect to host X11 display
 if command -v xhost >/dev/null 2>&1; then
   echo "🔓 Allowing local docker containers to connect to X11 ($DISPLAY)..."
@@ -23,6 +20,9 @@ if command -v xhost >/dev/null 2>&1; then
 else
   echo "⚠️  xhost not found; ensure host X server allows connections from containers"
 fi
+
+echo "🚀 Building Docker images (pulling latest base images)..."
+docker compose build --pull
 
 # Start core services
 echo "📦 Starting postgres, backend and frontend..."

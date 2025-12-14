@@ -36,7 +36,9 @@ RUN set -eux; \
 RUN set -eux; \
     apt-get install -y --no-install-recommends \
         libatspi2.0-0 \
-        libnotify4
+        libnotify4 \
+        libcanberra-gtk-module \
+        libcanberra-gtk3-module
 
 # Layer 6: Audio
 RUN set -eux; \
@@ -81,28 +83,11 @@ RUN echo "Creating placeholder icon..." && \
     base64 -d > assets/icon.png
 
 # Layer 16: Set display for X11
-ENV DISPLAY=:99
+# Do not hardcode DISPLAY here; inherit host DISPLAY at runtime
 
-# Layer 10: Create startup script
-RUN echo '#!/bin/bash\n\
-# Start virtual display\n\
-Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &\n\
-\n\
-# Wait for X server to start\n\
-sleep 2\n\
-\n\
-# Set up audio (optional)\n\
-export AUDIODEV=none\n\
-\n\
-# Start Electron\n\
-if [ "$1" = "--dev" ]; then\n\
-    echo "Starting Electron in development mode..."\n\
-    npm run dev\n\
-else\n\
-    echo "Starting Electron in production mode..."\n\
-    npm start\n\
-fi' > /app/start-electron.sh && \
-    chmod +x /app/start-electron.sh
+# Layer 10: Copy startup script from repo
+COPY start-electron.sh /app/start-electron.sh
+RUN chmod +x /app/start-electron.sh
 
 # Layer 11: Expose VNC port for debugging (optional)
 EXPOSE 5900
