@@ -14,13 +14,20 @@ docker compose build --pull
 if command -v xhost >/dev/null 2>&1; then
   echo "🔓 Allowing local docker containers to connect to X11 ($DISPLAY)..."
   xhost +local:docker || true
+  # Revoke xhost on exit
+  cleanup_xhost() {
+    echo "🔒 Revoking X11 access for local docker"
+    xhost -local:docker || true
+  }
+  trap cleanup_xhost EXIT
 else
   echo "⚠️  xhost not found; ensure host X server allows connections from containers"
 fi
 
 # Start core services
 echo "📦 Starting postgres, backend and frontend..."
-docker compose up -d postgres backend frontend
+# Use --build to ensure images are up-to-date and remove-orphans to keep things tidy
+docker compose up -d --build --remove-orphans postgres backend frontend
 
 # Wait for frontend and backend to be available
 check_url() {

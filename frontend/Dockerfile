@@ -10,6 +10,8 @@ COPY package.json ./
 COPY package-lock.json* ./
 
 # Layer 4: Install npm dependencies with cache optimization
+# Ensure curl is available for healthchecks
+RUN apk add --no-cache curl
 RUN npm install 
 RUN npm cache clean --force
 
