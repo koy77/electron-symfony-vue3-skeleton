@@ -3,8 +3,8 @@ set -euo pipefail
 
 # Single entrypoint to build and run the app with Docker or run Tauri locally.
 # Usage: ./start.sh [tauri]
-# - no args: builds images and starts postgres, backend, frontend, and electron container
-# - tauri : builds images, starts postgres+backend, then runs Tauri dev locally (requires Rust + GUI)
+# - no args: runs `docker compose up` for the stack
+# - tauri : builds images and starts postgres+backend, then runs Tauri dev locally (requires Rust + GUI)
 #
 # Requirements for Tauri mode on the host:
 # - Docker + docker compose
@@ -102,19 +102,5 @@ if [ "${1:-}" = "tauri" ]; then
   exec npx --yes @tauri-apps/cli@1 dev
 fi
 
-# Default behaviour: start frontend and (legacy) electron container
-echo "📦 Starting frontend container..."
-docker compose up -d frontend
-
-# Wait for frontend
-check_url "Frontend (Vite)" "http://localhost:5173/" || exit 1
-
-# Start electron container (it will connect to frontend)
-echo "🖥️  Starting Electron container..."
-docker compose up -d electron
-
-echo "✅ All services started. The Electron app should open on your host display (if X is available)."
-echo "To follow logs: docker compose logs -f electron"
-echo "To stop everything: docker compose down"
-
-echo "Note: xhost +local:docker was enabled to allow GUI. You can revoke it with: xhost -local:docker"
+echo "📦 Starting all Docker services with 'docker compose up' (Ctrl+C to stop)..."
+exec docker compose up
