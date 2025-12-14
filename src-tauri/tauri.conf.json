@@ -1,0 +1,21 @@
+{
+  "package": {
+    "productName": "Tauri Vue Symfony App",
+    "version": "0.1.0"
+  },
+  "build": {
+    "distDir": "../frontend/dist",
+    "devPath": "http://localhost:5173",
+    "beforeBuildCommand": "npm --prefix ../frontend run build"
+  },
+  "tauri": {
+    "bundle": {
+      "active": false,
+      "identifier": "com.example.coding_ui"
+    },
+    "allowlist": {},
+    "security": {
+      "csp": null
+    }
+  }
+}

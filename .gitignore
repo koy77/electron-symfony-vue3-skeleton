@@ -1,11 +1,14 @@
 # Ignore dependencies
 backend/vendor/
 frontend/node_modules/
-electron/node_modules/
+# Ignore dependencies
+backend/vendor/
+frontend/node_modules/
 
 # Ignore build artifacts
 frontend/dist/
-electron/dist/
+src-tauri/target/
+
 
 # Ignore environment files
 .env.local

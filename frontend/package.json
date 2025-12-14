@@ -6,13 +6,16 @@
     "scripts": {
         "dev": "vite",
         "build": "vue-tsc && vite build",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "tauri:dev": "npx tauri dev",
+        "tauri:build": "npx tauri build"
     },
     "dependencies": {
         "vue": "^3.4.0",
         "vue-router": "^4.2.0",
         "pinia": "^2.1.0",
-        "axios": "^1.6.0"
+        "axios": "^1.6.0",
+        "@tauri-apps/api": "^2.0.0"
     },
     "devDependencies": {
         "@vitejs/plugin-vue": "^5.0.0",
