@@ -39,24 +39,20 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Layer 8: Set working directory
 WORKDIR /var/www/html
 
-# Layer 9: Copy bootstrap script
-COPY docker-bootstrap.sh /usr/local/bin/bootstrap.sh
-RUN chmod +x /usr/local/bin/bootstrap.sh
-
-# Layer 10: Copy nginx config
+# Layer 9: Copy nginx config
 COPY nginx.conf /etc/nginx/sites-available/default
 
-# Layer 11: Copy supervisor config
+# Layer 10: Copy supervisor config
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Layer 12: Create directories
+# Layer 11: Create directories
 RUN mkdir -p /var/www/html /run/php
 
-# Layer 13: Set permissions
+# Layer 12: Set permissions
 RUN chown -R www-data:www-data /var/www/html
 
-# Layer 14: Expose port
+# Layer 13: Expose port
 EXPOSE 8000
 
-# Layer 15: Run application
-CMD ["/usr/local/bin/bootstrap.sh"]
+# Layer 14: Run supervisord to start php-fpm and nginx
+CMD ["/usr/bin/supervisord","-c","/etc/supervisor/conf.d/supervisord.conf"]

@@ -111,5 +111,6 @@ EXPOSE 5900
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
     CMD pgrep -f "electron" || exit 1
 
-# Layer 13: Start Electron
-CMD ["/app/start-electron.sh", "--dev"]
+# Layer 13: Start Electron via bash (ensure script runs as a shell, not Node)
+ENTRYPOINT ["/bin/bash", "/app/start-electron.sh"]
+CMD ["--dev"]
