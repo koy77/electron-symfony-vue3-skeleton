@@ -4,9 +4,9 @@
     "version": "0.1.0"
   },
   "build": {
-    "distDir": "../frontend/dist",
+    "distDir": "frontend/dist",
     "devPath": "http://localhost:5173",
-    "beforeBuildCommand": "npm --prefix ../frontend run build"
+    "beforeBuildCommand": "npm --prefix frontend run build"
   },
   "tauri": {
     "bundle": {
