@@ -2,24 +2,16 @@
 set -euo pipefail
 
 # Single entrypoint to build and run the app with Docker or run Tauri locally.
-# Usage: ./start.sh [tauri]
-# - no args: runs `docker compose up` for the stack
+# Usage: ./start.sh [tauri|start]
+# - no args: runs `docker compose up` for the stack (foreground)
 # - tauri : builds images and starts postgres+backend, then runs Tauri dev locally (requires Rust + GUI)
+# - start : runs `docker compose up -d` for already created containers
 #
 # Requirements for Tauri mode on the host:
 # - Docker + docker compose
 # - Node.js with npm/npx
 # - Rust toolchain (cargo) installed and available on PATH
 # - A working Linux GUI session (X11/Wayland) so the Tauri window can be shown
-
-echo "🚀 Building Docker images (pulling latest base images)..."
-docker compose build --pull
-
-# Start core services (postgres + backend). Frontend will be started either as a container
-# (default) or by the local Tauri tooling when running `./start.sh tauri`.
-echo "📦 Starting postgres and backend..."
-# Use --build to ensure images are up-to-date and remove-orphans to keep things tidy
-docker compose up -d --build --remove-orphans postgres backend
 
 # Wait helper
 check_url() {
@@ -41,9 +33,6 @@ check_url() {
   echo "✅ $name ready"
 }
 
-# Backend is exposed on host port 8001 (container 8000)
-check_url "Backend API" "http://localhost:8001/api" || exit 1
-
 # Helper to stop any already running Tauri dev processes to avoid Cargo lock issues
 stop_existing_tauri() {
   echo "🔍 Checking for existing Tauri dev processes..."
@@ -58,6 +47,17 @@ stop_existing_tauri() {
 
 if [ "${1:-}" = "tauri" ]; then
   echo "🛠️  Starting Tauri dev environment (local)..."
+
+  echo "🚀 Building Docker images (pulling latest base images)..."
+  docker compose build --pull
+
+  # Start core services (postgres + backend). Frontend will be started by the local Tauri tooling.
+  echo "📦 Starting postgres and backend..."
+  # Use --build to ensure images are up-to-date and remove-orphans to keep things tidy
+  docker compose up -d --build --remove-orphans postgres backend
+
+  # Backend is exposed on host port 8001 (container 8000)
+  check_url "Backend API" "http://localhost:8001/api" || exit 1
 
   # Ensure we do not have multiple Tauri dev sessions fighting over Cargo locks
   stop_existing_tauri
@@ -100,7 +100,10 @@ if [ "${1:-}" = "tauri" ]; then
   cd src-tauri
   echo "➡️  Running: npx @tauri-apps/cli@1 dev (this will run in the foreground)"
   exec npx --yes @tauri-apps/cli@1 dev
+elif [ "${1:-}" = "start" ]; then
+  echo "📦 Starting Docker stack in detached mode with 'docker compose up -d'..."
+  exec docker compose up -d
+else
+  echo "📦 Starting Docker stack with 'docker compose up' (Ctrl+C to stop)..."
+  exec docker compose up -d
 fi
-
-echo "📦 Starting all Docker services with 'docker compose up' (Ctrl+C to stop)..."
-exec docker compose up
